@@ -26,7 +26,7 @@ const scramjet = new ScramjetController({
 
 scramjet.init();
 
-const scramjetReady = scramjet.wait();
+const scramjetReady = scramjet.init();
 const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
 
 const tabs = [];
@@ -207,6 +207,21 @@ function ensureFrame(tab) {
     }
   });
 
+  frame.addEventListener("urlchange", (event) => {
+    try {
+      const nextUrl = new URL(event.url).href;
+      tab.url = nextUrl;
+      tab.title = getHostLabel(nextUrl);
+      if (activeTabId === tab.id) {
+        address.value = nextUrl;
+        setStatus("Viewing " + tab.title);
+      }
+      renderTabs();
+    } catch (error) {
+      console.warn("Could not read Scramjet URL change:", error);
+    }
+  });
+
   browserStage.append(frame.frame);
   tab.frame = frame;
   return frame;
@@ -311,54 +326,24 @@ function goBack() {
   const tab = currentTab();
   if (!tab || !tab.frame) return;
 
-  try {
-    const frameWindow = tab.frame.frame.contentWindow;
-    if (frameWindow && frameWindow.history.length > 1) {
-      frameWindow.history.back();
-      setStatus("Going back...");
-      return;
-    }
-  } catch (error) {
-    console.warn("Frame history is unavailable:", error);
-  }
-
-  if (tab.historyIndex > 0) {
-    tab.historyIndex--;
-    navigate(tab.history[tab.historyIndex], false);
-  }
+  tab.frame.back();
+  setStatus("Going back...");
 }
 
 function goForward() {
   const tab = currentTab();
   if (!tab || !tab.frame) return;
 
-  try {
-    const frameWindow = tab.frame.frame.contentWindow;
-    if (frameWindow && frameWindow.history.length > 1) {
-      frameWindow.history.forward();
-      setStatus("Going forward...");
-      return;
-    }
-  } catch (error) {
-    console.warn("Frame history is unavailable:", error);
-  }
-
-  if (tab.historyIndex < tab.history.length - 1) {
-    tab.historyIndex++;
-    navigate(tab.history[tab.historyIndex], false);
-  }
+  tab.frame.forward();
+  setStatus("Going forward...");
 }
 
 function refreshPage() {
   const tab = currentTab();
   if (!tab || tab.isHome || !tab.frame) return;
 
-  try {
-    tab.frame.frame.contentWindow.location.reload();
-    setStatus("Refreshing " + tab.title + "...");
-  } catch {
-    navigate(tab.url, false);
-  }
+  tab.frame.reload();
+  setStatus("Refreshing " + tab.title + "...");
 }
 
 form.addEventListener("submit", (event) => {
