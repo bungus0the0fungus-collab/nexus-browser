@@ -1,32 +1,38 @@
 "use strict";
+
 /**
+ * Resolve an address or search query using the configured search template.
+ * Bare domain names default to HTTPS; search terms go to Google by default.
  *
  * @param {string} input
- * @param {string} template Template for a search query.
- * @returns {string} Fully qualified URL
+ * @param {string} template
+ * @returns {string}
  */
 function search(input, template) {
-	try {
-		// input is a valid URL:
-		// eg: https://example.com, https://example.com/test?q=param
-		return new URL(input).toString();
-	} catch (err) {
-		// input was not a valid URL
-	}
+  const value = String(input || "").trim();
+  if (!value) return "";
 
-	try {
-		// input is a valid URL when http:// is added to the start:
-		// eg: example.com, https://example.com/test?q=param
-		const url = new URL(`http://${input}`);
-		// only if the hostname has a TLD/subdomain
-		if (url.hostname.includes(".")) return url.toString();
-	} catch (err) {
-		// input was not valid URL
-	}
+  // Already a fully qualified URL.
+  try {
+    return new URL(value).toString();
+  } catch {
+    // Continue and check whether this is a bare hostname.
+  }
 
-	// input may have been a valid URL, however the hostname was invalid
+  // Treat localhost as HTTP for local development.
+  if (/^localhost(?::\d+)?(?:[/?#].*)?$/i.test(value)) {
+    return new URL("http://" + value).toString();
+  }
 
-	// Attempts to convert the input to a fully qualified URL have failed
-	// Treat the input as a search query
-	return template.replace("%s", encodeURIComponent(input));
+  // Bare hostnames and IP addresses use HTTPS by default.
+  try {
+    const url = new URL("https://" + value);
+    if (url.hostname.includes(".") || /^\d{1,3}(?:\.\d{1,3}){3}$/.test(url.hostname)) {
+      return url.toString();
+    }
+  } catch {
+    // Not a hostname; treat this as a search.
+  }
+
+  return template.replace("%s", encodeURIComponent(value));
 }
