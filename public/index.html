@@ -1,66 +1,118 @@
 <!doctype html>
-<html>
-	<head>
-		<meta charset="utf-8" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-		/>
-		<title>Scramjet</title>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0d12">
+  <meta name="description" content="Nexus Browser — a dark, Google-powered browser interface using Scramjet.">
+  <title>Nexus Browser</title>
 
-		<link rel="shortcut icon" content="favicon.webp" />
-	
-		<script src="/scram/scramjet.all.js"></script>
-		<script src="/baremux/index.js"></script>
-		
-		<link rel="stylesheet" href="index.css" />
-		<script src="register-sw.js" defer></script>
-		<script src="search.js" defer></script>
-		<script src="index.js" defer></script>
-	</head>
+  <script src="/scram/scramjet.all.js"></script>
+  <script src="/baremux/index.js"></script>
 
-	<body>
-		<div title="Scramjet Logo" class="flex-center logo-wrapper header-center">
-			<img class="logo" src="sj.png" alt="Scramjet" />
-			<h1>Scramjet | MW</h1>
-		</div>
-		<div class="flex-center desc left-margin">
-			<p>
-				Scramjet is an experimental interception based web proxy designed to
-				evade internet censorship, bypass arbitrary web browser restrictions and
-				innovate web proxy technologies.
-			</p>
-		</div>
+  <link rel="stylesheet" href="/index.css">
+  <script src="/register-sw.js" defer></script>
+  <script src="/search.js" defer></script>
+  <script src="/index.js" defer></script>
+</head>
+<body>
+  <div class="app" id="app">
+    <header class="topbar">
+      <a class="brand" href="/" id="brandHome" aria-label="Nexus home">
+        <span class="brand-mark">N</span>
+        <span class="brand-name">NEXUS</span>
+      </a>
+      <div class="topbar-right">
+        <span class="engine-indicator"><span class="status-dot"></span> GOOGLE SEARCH</span>
+        <button id="fullscreen" class="icon-button window-button" title="Toggle fullscreen" aria-label="Toggle fullscreen">⛶</button>
+      </div>
+    </header>
 
-		<form id="sj-form" class="flex-center">
-			<input
-				id="sj-search-engine"
-				value="https://www.google.com/search?q=%s"
-				type="hidden"
-			/>
-			<input id="sj-address" type="text" placeholder="Search the web freely" />
-		</form>
-		<div class="desc left-margin">
-			<p id="sj-error"></p>
-			<pre id="sj-error-code"></pre>
-		</div>
-		<footer>
-			<div>
-				<a
-					title="The Mercury Workshop GitHub organization"
-					href="https://github.com/MercuryWorkshop"
-					>Mercury Workshop</a
-				>
-				<a
-					title="The example demo app for Scramjet"
-					href="https://github.com/MercuryWorkshop/Scramjet-Demo"
-					>GitHub</a
-				>
-				<a title="License information" href="credits.html">Credits</a>
-			</div>
-			<div>
-				<span>Scramjet &copy; MW 2025</span>
-			</div>
-		</footer>
-	</body>
+    <nav class="tabbar" aria-label="Browser tabs">
+      <div id="tabs" class="tabs"></div>
+      <button id="newTab" class="icon-button add-tab" title="New tab" aria-label="New tab">＋</button>
+    </nav>
+
+    <section class="toolbar" aria-label="Browser navigation">
+      <div class="nav-buttons">
+        <button id="back" class="icon-button" title="Back" aria-label="Back" disabled>‹</button>
+        <button id="forward" class="icon-button" title="Forward" aria-label="Forward" disabled>›</button>
+        <button id="refresh" class="icon-button" title="Refresh" aria-label="Refresh">↻</button>
+        <button id="home" class="icon-button" title="Home" aria-label="Home">⌂</button>
+      </div>
+
+      <form id="addressForm" class="address-form" autocomplete="off">
+        <span class="address-icon" aria-hidden="true">⌕</span>
+        <input id="address" type="text" spellcheck="false" autocomplete="off"
+          placeholder="Search Google or enter a website address"
+          aria-label="Search Google or enter a website address">
+        <button class="go-button" type="submit">Go</button>
+      </form>
+    </section>
+
+    <main class="viewport" id="viewport">
+      <section id="homePage" class="home-page">
+        <div class="home-content">
+          <div class="hero-mark">N</div>
+          <p class="eyebrow">YOUR SPACE ON THE WEB</p>
+          <h1>NEXUS<span>.</span></h1>
+          <p class="tagline">One place. Endless possibilities.</p>
+
+          <form id="homeSearch" class="home-search" autocomplete="off">
+            <span aria-hidden="true">⌕</span>
+            <input id="homeSearchInput" type="text"
+              placeholder="Search Google or enter a website"
+              autocomplete="off" aria-label="Search Google or enter a website">
+            <button type="submit">Search</button>
+          </form>
+
+          <div class="quick-links" aria-label="Quick links">
+            <button type="button" data-url="https://www.google.com" class="quick-link">
+              <span class="quick-icon google">G</span>Google
+            </button>
+            <button type="button" data-url="https://www.youtube.com" class="quick-link">
+              <span class="quick-icon youtube">▶</span>YouTube
+            </button>
+            <button type="button" data-url="https://play.geforcenow.com/" class="quick-link">
+              <span class="quick-icon geforce">✦</span>GeForce NOW
+            </button>
+            <button type="button" data-url="https://store.steampowered.com/" class="quick-link">
+              <span class="quick-icon steam">S</span>Steam
+            </button>
+          </div>
+
+          <p class="home-hint">
+            Powered by Scramjet. No built-in ad blocker. Some websites and streaming features may have compatibility limits.
+          </p>
+        </div>
+      </section>
+
+      <section id="browserStage" class="browser-stage" aria-label="Website view" hidden></section>
+
+      <section id="errorPanel" class="message-page" hidden>
+        <div class="message-card">
+          <div class="message-symbol">!</div>
+          <h2 id="errorTitle">Unable to open this page</h2>
+          <p id="errorMessage">The proxy could not start.</p>
+          <button id="retry" class="primary-button" type="button">Try again</button>
+          <button id="errorHome" class="text-button" type="button">Return to Nexus home</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="statusbar">
+      <span class="status-left">
+        <b class="status-dot" id="connectionDot"></b>
+        <span id="statusText">Nexus is ready</span>
+      </span>
+      <span class="status-right">
+        Powered by <a href="https://github.com/MercuryWorkshop/Scramjet" target="_blank" rel="noreferrer">Scramjet</a>
+        · <a href="/credits.html">Credits &amp; license</a>
+        · <a href="https://github.com/bungus0the0fungus-collab/nexus-browser" target="_blank" rel="noreferrer">Source</a>
+      </span>
+    </footer>
+  </div>
+
+  <input id="sj-search-engine" type="hidden" value="https://www.google.com/search?q=%s">
+</body>
 </html>

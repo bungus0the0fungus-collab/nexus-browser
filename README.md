@@ -1,74 +1,60 @@
-<p align="center"><img src="https://raw.githubusercontent.com/MercuryWorkshop/scramjet/main/assets/scramjet.png" height="200"></p>
+# Nexus Browser
 
-<h1 align="center">Scramjet Demo</h1>
+Nexus is a custom dark browser interface built on the Scramjet Demo application.
 
-The demo implementation of <a href="https://github.com/MercuryWorkshop/scramjet">Scramjet</a>, the most advanced web proxy.
+It keeps the Scramjet proxy engine and Wisp WebSocket transport while replacing the default demo page with the Nexus interface.
 
-<a href="https://github.com/MercuryWorkshop/scramjet">Scramjet</a> is an experimental interception based web proxy designed with security, developer friendliness, and performance in mind. This project is made to evade internet censorship and bypass arbitrary web browser restrictions.
+## Features
 
-#### Refer to <a href="https://github.com/HeyPuter/browser.js">browser.js</a> where this project will now receive updates outside of just bypassing internet censorship.
+- Dark Nexus layout with tabs and browser navigation controls
+- Google is the default search engine
+- Search terms are routed to Google
+- Scramjet proxy navigation for websites
+- Wisp WebSocket transport
+- No built-in ad blocker
+- Designed to work in modern desktop and Chromebook browsers
 
-## Supported Sites
+GeForce NOW, YouTube, and other complex websites are compatibility targets, not guarantees. Their behavior can depend on their own changes, browser features, media support, network quality, and hosting provider. Datacenter-hosted IP addresses may also receive CAPTCHA challenges or service restrictions.
 
-Scramjet has CAPTCHA support! Some of the popular websites that Scramjet supports include:
+## Local development
 
-- [Google](https://google.com)
-- [Twitter](https://twitter.com)
-- [Instagram](https://instagram.com)
-- [Youtube](https://youtube.com)
-- [Spotify](https://spotify.com)
-- [Discord](https://discord.com)
-- [Reddit](https://reddit.com)
-- [GeForce NOW](https://play.geforcenow.com/)
+Requirements: Node.js 20 or newer and pnpm 10.
 
-Ensure you are not hosting on a datacenter IP for CAPTCHAs to work reliably along with YouTube. Heavy amounts of traffic will make some sites NOT work on a single IP. Consider rotating IPs or routing through Wireguard using a project like <a href="https://github.com/whyvl/wireproxy">wireproxy</a>.
+1. Install dependencies:
 
-## Setup / Usage
+   pnpm install
 
-You will need Node.js 16.x (and above) and Git installed; below is an example for Debian/Ubuntu setup.
+2. Start Nexus:
 
-```
-sudo apt update
-sudo apt upgrade
-sudo apt install curl git nginx
+   pnpm start
 
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+3. Open the local address printed by the server (normally http://localhost:8080).
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+The service worker requires HTTPS in production. Localhost is allowed for development.
 
-nvm install 20
-nvm use 20
+## Render deployment
 
-git clone https://github.com/MercuryWorkshop/Scramjet-App
-cd Scramjet-App
-```
+This repository includes a Render Blueprint in render.yaml and a Dockerfile.
 
-Install dependencies
+1. Sign in to Render.
+2. Create a new Blueprint or Web Service from this GitHub repository.
+3. For Docker deployment, use the repository Dockerfile.
+4. Deploy the service and open its onrender.com URL.
 
-```
-pnpm install
-```
+Render web services support WebSocket connections required by the Wisp endpoint. Free instances may spin down after inactivity and take time to start again. That startup delay and shared datacenter IP reputation can affect proxy use and streaming reliability.
 
-Run the server
+## Proxy transport
 
-```
-pnpm start
-```
+The browser uses Scramjet with libcurl-transport and a Wisp WebSocket endpoint at /wisp/. The application does not install an ad-blocking extension or add an ad-filtering list.
 
-Resources for self-hosting:
+## Project attribution and license
 
-- https://github.com/nvm-sh/nvm
-- https://docs.titaniumnetwork.org/guides/nginx/
-- https://docs.titaniumnetwork.org/guides/vps-hosting/
-- https://docs.titaniumnetwork.org/guides/dns-setup/
+This project is based on the Scramjet Demo by Mercury Workshop and retains its AGPL-3.0 license and credits. See LICENSE and public/credits.html.
 
-### HTTP Transport
+Nexus-specific interface and deployment changes are maintained in this fork:
+https://github.com/bungus0the0fungus-collab/nexus-browser
 
-The example uses [libcurl-transport](https://github.com/MercuryWorkshop/libcurl-transport) to fetch proxied data encrypted.
+Original Scramjet project:
+https://github.com/MercuryWorkshop/scramjet
 
-You may also want to use [epoxy-transport](https://github.com/MercuryWorkshop/epoxy-transport), a different way of fetching encrypted data.
-
-This example also now uses [wisp-js/server](https://www.npmjs.com/package/@mercuryworkshop/wisp-js) instead of the now outdated wisp-server-node. Please note that this can also be replaced with other wisp implementations like [wisp-server-python](https://github.com/MercuryWorkshop/wisp-server-python) which is highly recommended for production.
-
-See the [bare-mux](https://github.com/MercuryWorkshop/bare-mux) documentation for more information.
+This is an experimental browser proxy project. Use it responsibly and follow the terms and rules of the websites and services you access.
